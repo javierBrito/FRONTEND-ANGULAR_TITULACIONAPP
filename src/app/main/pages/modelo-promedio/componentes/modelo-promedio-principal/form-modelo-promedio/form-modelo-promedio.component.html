@@ -1,0 +1,107 @@
+
+<app-detail (close)="closeDetail($event)">
+    <h1 detail-title><strong>{{modeloPromedioEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
+    <form detail-content [formGroup]="formModeloPromedio" (ngSubmit)="addRegistro()">
+        <div class="row form-group">
+            <div class="col-12 flex justify-end card profile-header mb-2 was-validated">
+                <label for="graCodigo"><b>{{'Grado(*): '}}</b></label>               
+                <select  name="graCodigo" formControlName="graCodigo" required placeholder="Seleccione Grado"
+                    class="form-control mr-sm-2" id="selectGraCodigoIni" #t>
+                    <option [value]="" selected>Seleccionar Grado</option>
+                    <option *ngFor="let data  of listaGrado" [value]="data.graCodigo">
+                        <span>{{data.graNemonico}}</span>
+                    </option>
+                </select>
+                <div class="valid-feedback"></div>
+                <div class="invalid-feedback">Por favor seleccione una opción.</div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="mprDenominacion"><b>{{'Denominación(*): '}}</b></label>
+                <input type="text" name="mprDenominacion" formControlName="mprDenominacion" class="form-control"
+                    id="mprDenominacion" oninput="mprDenominacion.value = mprDenominacion.value.toUpperCase()"
+                    [ngClass]="{'is-valid': mprDenominacionField?.dirty && !mprDenominacionField?.invalid && !mprDenominacionField?.errors,'is-invalid': mprDenominacionField?.dirty && mprDenominacionField?.invalid && mprDenominacionField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="mprDenominacionField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="mprDesde"><b>{{'Calificación Desde(*): Formato 0.00'}}</b></label>
+                <input type="number" name="mprDesde" formControlName="mprDesde" class="form-control"
+                    id="mprDesde" placeholder="0.01" step="0.01" min="0.00" max="10"
+                    [ngClass]="{'is-valid': mprDesdeField?.dirty && !mprDesdeField?.invalid && !mprDesdeField?.errors,'is-invalid': mprDesdeField?.dirty && mprDesdeField?.invalid && mprDesdeField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="mprDesdeField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="mprHasta"><b>{{'Calificación Hasta(*): Formato 10.00'}}</b></label>
+                <input type="number" name="mprHasta" formControlName="mprHasta" class="form-control"
+                    id="mprHasta" placeholder="10.00" step="0.01" min="0.01" max="10"
+                    [ngClass]="{'is-valid': mprHastaField?.dirty && !mprHastaField?.invalid && !mprHastaField?.errors && (mprHastaField?.value > mprHastaField?.value), 'is-invalid': mprHastaField?.dirty && mprHastaField?.invalid && mprHastaField?.errors  && !(mprHastaField?.value > mprHastaField?.value)}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="mprHastaField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="mprNemonico"><b>{{'Nemónico(*): '}}</b></label>
+                <input type="text" name="mprNemonico" formControlName="mprNemonico" class="form-control"
+                    id="mprNemonico" oninput="mprNemonico.value = mprNemonico.value.toUpperCase()" maxlength="10"
+                    [ngClass]="{'is-valid': mprNemonicoField?.dirty && !mprNemonicoField?.invalid && !mprNemonicoField?.errors,'is-invalid': mprNemonicoField?.dirty && mprNemonicoField?.invalid && mprNemonicoField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="mprNemonicoField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-block btn-primary"
+                    [disabled]="formModeloPromedio?.invalid || (mprHastaField?.value < mprDesdeField?.value)">
+                    {{modeloPromedioEditar?'GUARDAR':'GUARDAR'}}</button>
+            </div>
+        </div>
+    </form>
+</app-detail>
+
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Éxito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{modeloPromedioEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro correctamente.'}}
+    </div>
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{modeloPromedioEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir el registro.'}}
+    </div>
+</ng-template>

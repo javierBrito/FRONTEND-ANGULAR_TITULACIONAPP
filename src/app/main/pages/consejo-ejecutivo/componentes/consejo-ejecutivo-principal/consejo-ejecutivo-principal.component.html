@@ -1,0 +1,150 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card box-shadow-sm">
+            <div class="card-footer">
+                <div class="row form-group">
+                    <div class="col-12">
+                        <h5>Datos Consejo Ejecutivo :</h5>
+                    </div>
+                </div>
+                <form detail-content [formGroup]="formConsejoEjecutivo">
+                    <div class="row form-group">
+                        <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
+                            <label for="optionReanleCodigo">{{'Período (*): '}}</label>
+                            <select name="optionReanleCodigo" formControlName="reanleCodigo" required
+                                placeholder="Seleccione Año Lectivo" class="form-control mr-sm-2" (change)="listarConsejoEjecutivo()" 
+                                id="selectReanleCodigo" #t>
+                                <!-- <option [value]="" selected>Seleccionar Período</option> -->
+                                <option *ngFor="let periodo  of listaPeriodoRegAniLec" [value]="periodo.reanleCodigo">
+                                    <span>{{periodo.CatRegimen?.regDescripcion}} -
+                                        {{periodo.CatAnioLectivo?.anilecAnioInicio}} -
+                                        {{periodo.CatAnioLectivo?.anilecAnioFin}}</span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-12">
+                        <ng-container>
+                            <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
+                                [(selectedIndex)]="selectedTab">
+                                <mat-tab>
+                                    <section class="tab-container">
+                                        <div >
+                                            {{'Lista Consejo Ejecutivo'}}
+                                            <button type="submit" (click)="openDetail(1)" matTooltip="Agregar Nuevo Consejo Ejecutivo"
+                                                class="btn btn-block btn-primary form-control mt-2"
+                                                [disabled]="formConsejoEjecutivo?.invalid">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                {{'Agregar Consejo Ejecutivo'}}
+                                            </button>
+                                            <table class="table" *ngIf="listaConsejosEjecutivos.length > 0" id="tablaMatutino">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Cargo</th>
+                                                        <th scope="col">Identificación</th>
+                                                        <th scope="col">Nombre</th>
+                                                        <th scope="col">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        *ngFor="let consejoEje of listaConsejosEjecutivos | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        <td>{{index+1}}</td>
+                                                        <td><span *ngIf="consejoEje.cargo">{{consejoEje.cargo.carNombre}}</span></td>
+                                                        <td>{{consejoEje.cejCedula}}</td>
+                                                        <td>{{consejoEje.cejNombre}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group"
+                                                                aria-label="Basic example">
+                                                                <button (click)="openEditarDetail(consejoEje)" matTooltip="Editar Consejo Ejecutivo"
+                                                                    type=" button" class="btn btn-primary" rippleEffect
+                                                                    round><i class="fa fa-pencil"
+                                                                        (click)="openEditarDetail(consejoEje)"></i></button>
+                                                                <button (click)="openRemoverDetail(consejoEje)" matTooltip="Eliminar Consejo Ejecutivo"
+                                                                    type="button" class="btn btn-danger" rippleEffect><i
+                                                                        class="fa fa-trash"
+                                                                        (click)="openRemoverDetail(consejoEje)"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="row mt-5" *ngIf="listaConsejosEjecutivos.length > itemsRegistros">
+                                                <div class="col-12 text-center">
+                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                        [responsive]="true" [autoHide]="true" previousLabel="Anterior"
+                                                        nextLabel="Siguiente" (pageChange)="page = $event"
+                                                        screenReaderCurrentLabel="Tú estas en la página:">
+                                                    </pagination-controls>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngIf="listaConsejosEjecutivos.length === 0">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>No hay datos disponibles</p>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </section>
+                                </mat-tab>
+                            </mat-tab-group>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-form-consejo-ejecutivo [consejoEjecutivoEditar]="consejoEjecutivoSeleccionado" 
+    [insCodigo]="insCodigo" [reanleCodigoChild]="reanleCodigo" [listaConsejosEjecutivoChild]="listarConsejoEjecutivo"
+    (listaConsejoEjecutivo)="listaConsejoEjecutivoActualizada($event)"  
+    (close)="closeDetail($event)" *ngIf="showDetail">
+</app-form-consejo-ejecutivo>
+
+<ng-template #modal_confirm_delete let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Confirmar borrado.'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'¿Quieres borrar el registro?'}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('yes')">{{'Si'}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('no')">{{'No'}}</button>
+    </div>
+</ng-template>
+
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Exito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'El registro ha sido borrada con éxito'}}
+    </div>
+
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'Ha habido un problema al borrar el registro'}}
+    </div>
+</ng-template>

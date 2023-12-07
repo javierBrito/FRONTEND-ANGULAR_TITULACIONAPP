@@ -1,0 +1,129 @@
+<app-detail (close)="closeDetail($event)">
+    <h1 detail-title><strong>{{modeloCalificacionEditar ?'EDITAR':'AGREGAR'}}</strong></h1>
+    <form detail-content [formGroup]="formModeloCalificacion" (ngSubmit)="addRegistro()">
+
+        <div class="row form-group">
+            <div class="col-12 flex justify-end card profile-header mb-2 was-validated">
+                <label for="optionTipeduCodigo">{{'Tipo Educación(*): '}}</label>
+                <select name="optionTipeduCodigo" formControlName="tipeduCodigo" required
+                    placeholder="Seleccione Tipo Educacion" class="form-control mr-sm-2" id="selectTipeduCodigo" #t>
+                    <!-- <option [value]="" selected>Seleccionar Tipo Educación</option> -->
+                    <option *ngFor="let data  of listaTipoEducacion" [value]="data.tipeduCodigo">
+                        <span>{{data.tipeduNombre}}</span>
+                    </option>
+                </select>
+                <div class="valid-feedback"></div>
+                <div class="invalid-feedback">Por favor seleccione una opción.</div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="txtDenominacion">{{'Denominación(*): '}}</label>
+                <input type="text" name="txtDenominacion" formControlName="txtDenominacion" class="form-control"
+                    id="txtDenominacion" oninput="txtDenominacion.value = txtDenominacion.value.toUpperCase()"
+                    [ngClass]="{'is-valid': denominacionField?.dirty && !denominacionField?.invalid && !denominacionField?.errors,'is-invalid': denominacionField?.dirty && denominacionField?.invalid && denominacionField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="denominacionField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="numCalificacionDesde">{{'Calificación Desde(*): Formato 0.00'}}</label>
+                <input type="number" name="numCalificacionDesde" formControlName="numCalificacionDesde"
+                    class="form-control" id="numCalificacionDesde" placeholder="0.01" step="0.01" min="0.00" max="10"
+                    [ngClass]="{'is-valid': calificacionDesdeField?.dirty && !calificacionDesdeField?.invalid && !calificacionDesdeField?.errors,'is-invalid': calificacionDesdeField?.dirty && calificacionDesdeField?.invalid && calificacionDesdeField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="calificacionDesdeField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="numCalificacionHasta">{{'Calificación Hasta(*): Formato 10.00'}}</label>
+                <input type="number" name="numCalificacionHasta" formControlName="numCalificacionHasta"
+                    class="form-control" id="numCalificacionHasta" placeholder="10.00" step="0.01" min="0.01" max="10"
+                    [ngClass]="{'is-valid': calificacionHastaField?.dirty && !calificacionHastaField?.invalid && !calificacionHastaField?.errors && (calificacionHastaField?.value > calificacionDesdeField?.value), 'is-invalid': calificacionHastaField?.dirty && calificacionHastaField?.invalid && calificacionHastaField?.errors  && !(calificacionHastaField?.value > calificacionDesdeField?.value)}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="calificacionHastaField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="mcaFormula">{{'Formula(*): '}}</label>
+                <input type="text" name="mcaFormula" formControlName="mcaFormula" class="form-control" id="mcaFormula"
+                    oninput="mcaFormula.value = mcaFormula.value.toUpperCase()"
+                    [ngClass]="{'is-valid': denominacionField?.dirty && !denominacionField?.invalid && !denominacionField?.errors,'is-invalid': denominacionField?.dirty && denominacionField?.invalid && denominacionField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="denominacionField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-12">
+                <label for="numPorcentaje">{{'Porcentaje(*): Formato 100.00'}}</label>
+                <input type="number" name="numPorcentaje" formControlName="numPorcentaje" class="form-control"
+                    id="numPorcentaje" placeholder="100.00" step="0.01" min="0.01" max="100"
+                    [ngClass]="{'is-valid': porcentajeField?.dirty && !porcentajeField?.invalid && !porcentajeField?.errors,'is-invalid': porcentajeField?.dirty && porcentajeField?.invalid && porcentajeField?.errors}">
+                <div class="valid-feedback">
+                    <span>{{ "Exito"}}</span>
+                </div>
+                <div class="invalid-feedback">
+                    <span *ngIf="porcentajeField?.errors?.['required']">{{"Requerido"}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-block btn-primary"
+                    [disabled]="formModeloCalificacion?.invalid || (calificacionHastaField?.value < calificacionDesdeField?.value)">
+                    {{modeloCalificacionEditar?'GUARDAR':'GUARDAR'}}</button>
+            </div>
+        </div>
+    </form>
+</app-detail>
+
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Éxito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{modeloCalificacionEditar ?'Se ha actualizado el registro correctamente.':'Se ha agregado el registro
+        correctamente.'}}
+    </div>
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{modeloCalificacionEditar?'Ha habido un problema al actualizar el registro.':'Ha habido un problema al añadir
+        el registro.'}}
+    </div>
+</ng-template>

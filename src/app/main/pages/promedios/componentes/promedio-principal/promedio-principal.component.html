@@ -1,0 +1,229 @@
+<form detail-content [formGroup]="formPromedio">
+    <div class="row">
+        <div class="col-12">
+            <div class="card box-shadow-sm">
+                <div class="card-footer">
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <h3>Abanderados - Promedios (ie)</h3>
+                            <h4>{{sede.nombre}}</h4>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
+                            <label for="optionReanleCodigo">
+                                <h4><b>{{'Período (*): '}}</b></h4>
+                            </label>
+                            <select name="optionReanleCodigo" formControlName="reanleCodigo" required
+                                class="form-control" (change)="seleccionarOferta()" id="selectReanleCodigo">
+                                <option [value]="''" selected>Seleccionar Período</option>
+                                <option *ngFor="let periodo of listaPeriodoRegAniLecAux" [value]="periodo.reanleCodigo">
+                                    <span>{{periodo.CatRegimen?.regDescripcion}} -
+                                        {{periodo.CatAnioLectivo?.anilecAnioInicio}} -
+                                        {{periodo.CatAnioLectivo?.anilecAnioFin}}</span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor, seleccione una opción.</div>
+                        </div>
+
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-12">
+                            <ng-container>
+                                <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
+                                    [(selectedIndex)]="selectedTab">
+                                    <mat-tab>
+                                        <section class="tab-container">
+                                            <div>
+                                                <h3><b>{{'Oferta Tercero de Bachillerato'}}</b></h3>
+                                                <table class="table" *ngIf="listaOfertaCursoPresentacion.length > 0"
+                                                    id="tablaMatutino">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Modalidad</th>
+                                                            <th scope="col">Jornada</th>
+                                                            <th scope="col">Grado</th>
+                                                            <th scope="col">Especialidad</th>
+                                                            <th scope="col">Paralelo</th>
+                                                            <th scope="col">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            *ngFor="let oferta of listaOfertaCursoPresentacion | paginate: {id:'paginacionOferta', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                            <td>{{index+1}}</td>
+                                                            <td>{{oferta.nemonicoModalidad}}</td>
+                                                            <td>{{oferta.nemonicoJornada}}</td>
+                                                            <td>{{oferta.nemonicoGrado}}</td>
+                                                            <td>{{oferta.nemonicoEspecialidad?oferta.nemonicoEspecialidad:'NA'}}
+                                                            </td>
+                                                            <td>{{oferta.nemonicoParalelo}}</td>
+                                                            <td>
+                                                                <div class="btn-group" role="group"
+                                                                    aria-label="Basic example">
+                                                                    <button (click)="listarEstudiantes(oferta)"
+                                                                        type=" button" class="btn btn-primary"
+                                                                        rippleEffect round><i
+                                                                            class="fa fa-pencil"></i>{{' Ver
+                                                                        Estudiantes'}}</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <div class="row mt-5"
+                                                    *ngIf="listaOfertaCursoPresentacion.length > itemsRegistros">
+                                                    <div class="col-12 text-center">
+                                                        <pagination-controls id="paginacionOferta" class="paginacion"
+                                                            [responsive]="true" [autoHide]="true"
+                                                            previousLabel="Anterior" nextLabel="Siguiente"
+                                                            (pageChange)="page = $event"
+                                                            screenReaderCurrentLabel="Tú estas en la página:">
+                                                        </pagination-controls>
+                                                    </div>
+                                                </div>
+                                                <ng-container *ngIf="listaOfertaCursoPresentacion.length === 0">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <p>No hay datos disponibles</p>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </section>
+                                    </mat-tab>
+                                </mat-tab-group>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row form-group" *ngIf="ofertaSeleccionada">
+                        <div class="col-12">
+                            <ng-container>
+                                <section class="tab-container">
+                                    <div class="mt-3">
+                                        <h4><b>{{'Lista De Estudiantes de '}}{{ofertaSeleccionada.nemonicoTipoEducacion}}
+                                        {{ofertaSeleccionada.nemonicoModalidad}} {{ofertaSeleccionada.nemonicoJornada}}
+                                        {{ofertaSeleccionada.nemonicoGrado}} {{ofertaSeleccionada.nemonicoEspecialidad}}
+                                        - Paralelo:
+                                        {{ofertaSeleccionada.nemonicoParalelo}}</b></h4>
+                                        <!-- <button type="submit" (click)="openDetail(1)"
+                                                    class="btn btn-block btn-primary form-control mt-2">
+                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    {{'Consejo Ejecutivo'}}
+                                                </button> -->
+                                        <table class="table mt-2" *ngIf="this.listaEstudiantePresentacion.length > 0"
+                                            id="tablaMatutino">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col"><div class="text-center">Identificación</div></th>
+                                                    <th scope="col"><div class="text-center">Nombre</div></th>
+
+                                                    <th *ngFor="let modelo of this.listaModeloPromedio; let index=index"
+                                                        scope="col"><div class="text-center">{{modelo.mprDenominacion}}</div></th>
+
+                                                    <th scope="col">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr
+                                                    *ngFor="let estudiante of this.listaEstudiantePresentacion | paginate: {id:'paginacionEstudiantes', itemsPerPage: itemsRegistros, currentPage: pageEstudiantes } ; let index=index">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{estudiante.estIdentificacion}}</td>
+                                                    <td>{{estudiante.estNombres}}</td>
+                                                    <td *ngFor="let nota of estudiante?.listaNotas" scope="col"><input
+                                                            style="width: 50px; text-align:center" [(ngModel)]="nota.proValor"
+                                                            (change)="capturarInputs(estudiante)"
+                                                            [ngModelOptions]="{standalone: true}"
+                                                            [disabled]="idInput!='curso_'+index" type="text"
+                                                            id="curso_{{index}}">
+                                                    </td>
+                                                    <td>
+                                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                                            <button [disabled]="idInput!='curso_'+index"
+                                                                (click)="guardarNotas(estudiante, 'curso_'+index)"
+                                                                type="button" class="btn btn-success" rippleEffect><i
+                                                                    class="fa fa-floppy-o"></i></button>
+                                                            <button (click)="editarNota(estudiante, 'curso_'+index)"
+                                                                type=" button" class="btn btn-primary" rippleEffect
+                                                                round><i class="fa fa-pencil"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="row mt-5"
+                                            *ngIf="this.listaEstudiantePresentacion.length > itemsRegistros">
+                                            <div class="col-12 text-center">
+                                                <pagination-controls id="paginacionEstudiantes" class="paginacion"
+                                                    [responsive]="true" [autoHide]="true" previousLabel="Anterior"
+                                                    nextLabel="Siguiente" (pageChange)="pageEstudiantes = $event"
+                                                    screenReaderCurrentLabel="Tú estas en la página:">
+                                                </pagination-controls>
+                                            </div>
+                                        </div>
+                                        <ng-container *ngIf="this.listaEstudiantePresentacion.length === 0">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <p>No hay datos disponibles</p>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </section>
+
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<ng-template #modal_confirm_delete let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Confirmar borrado.'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'¿Quieres borrar el registro?'}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('yes')">{{'Si'}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('no')">{{'No'}}</button>
+    </div>
+
+</ng-template>
+<ng-template #modal_success let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Exito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'El registro ha sido borrada con éxito'}}
+    </div>
+
+</ng-template>
+<ng-template #modal_error let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'Ha habido un problema al borrar el registro'}}
+    </div>
+
+</ng-template>

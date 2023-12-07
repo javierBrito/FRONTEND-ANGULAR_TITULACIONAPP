@@ -1,0 +1,160 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card box-shadow-sm">
+            <div class="card-footer">
+                <div class="row form-group">
+                    <div class="col-12">
+                        <h3><b>Datos Modelo Promedio :</b></h3>
+                    </div>
+                </div>
+                <form detail-content [formGroup]="formModeloPromedio">
+                    <div class="row form-group">
+                        <div class="col-6 flex justify-end card profile-header mb-2 was-validated">
+                            <label for="periodo"><h4><b>{{'Período (*): '}}</b></h4></label>
+                            <select name="periodo" formControlName="periodo" required
+                                placeholder="Seleccione periódo" class="form-control mr-sm-2" (change)="listarModeloPromedio()" 
+                                id="periodo">
+                                <option [value]="" selected>Seleccionar período</option>
+                                <option *ngFor="let periodo  of listaPeriodoRegAniLec" [ngValue]="periodo">
+                                    <span>
+                                        {{periodo?.CatRegimen?.regDescripcion}} -
+                                        {{periodo?.CatAnioLectivo?.anilecAnioInicio}} -
+                                        {{periodo?.CatAnioLectivo?.anilecAnioFin}}
+                                    </span>
+                                </option>
+                            </select>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-12">
+                        <ng-container>
+                            <mat-tab-group mat-align-tabs="center" #revTabGroup class="tab-group"
+                                [(selectedIndex)]="selectedTab">
+                                <mat-tab>
+                                    <section class="tab-container">
+                                        <div >
+                                            <h3><b>Lista Modelo Promedio de: 
+                                                {{periodoSeleccionado?.CatRegimen?.regDescripcion}} -
+                                                {{periodoSeleccionado?.CatAnioLectivo?.anilecAnioInicio}} -
+                                                {{periodoSeleccionado?.CatAnioLectivo?.anilecAnioFin}}
+                                            </b></h3>
+                                            <button type="submit" (click)="openDetail()" matTooltip="Agregar Nuevo Modelo Promedio"
+                                                class="btn btn-block btn-primary form-control mt-2"
+                                                [disabled]="formModeloPromedio?.invalid">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                                {{'Agregar Modelo Promedio'}}
+                                            </button>
+                                            <table class="table" *ngIf="listaModeloPromedio.length > 0" id="tablaModeloPromedio">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Tipo Educación</th>
+                                                        <th scope="col">Grado</th>
+                                                        <th scope="col">Denominación</th>
+                                                        <th scope="col">Promedio Desde</th>
+                                                        <th scope="col">Promedio Hasta</th>
+                                                        <th scope="col">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        *ngFor="let modeloPromedio of listaModeloPromedio | paginate: {id:'paginacionMatutino', itemsPerPage: itemsRegistros, currentPage: page } ; let index=index">
+                                                        <td>{{index+1}}</td>
+                                                        <td><span *ngIf="modeloPromedio.tipoEducacion">{{modeloPromedio.tipoEducacion.tipeduNombre}}</span></td>
+                                                        <td><span *ngIf="modeloPromedio.grado">{{modeloPromedio.grado.graNemonico}}</span></td>
+                                                        <td>{{modeloPromedio.mprDenominacion}}</td>
+                                                        <td>{{modeloPromedio.mprDesde}}</td>
+                                                        <td>{{modeloPromedio.mprHasta}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group"
+                                                                aria-label="Basic example">
+                                                                <button (click)="openEditarDetail(modeloPromedio)" matTooltip="Editar Modelo Promedio"
+                                                                    type=" button" class="btn btn-primary" rippleEffect
+                                                                    round><i class="fa fa-pencil"
+                                                                        (click)="openEditarDetail(modeloPromedio)"></i></button>
+                                                                <button (click)="openRemoverDetail(modeloPromedio)" matTooltip="Eliminar Modelo Promedio"
+                                                                    type="button" class="btn btn-danger" rippleEffect><i
+                                                                        class="fa fa-trash"
+                                                                        (click)="openRemoverDetail(modeloPromedio)"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div class="row mt-5" *ngIf="listaModeloPromedio.length > itemsRegistros">
+                                                <div class="col-12 text-center">
+                                                    <pagination-controls id="paginacionMatutino" class="paginacion"
+                                                        [responsive]="true" [autoHide]="true" previousLabel="Anterior"
+                                                        nextLabel="Siguiente" (pageChange)="page = $event"
+                                                        screenReaderCurrentLabel="Tú estas en la página:">
+                                                    </pagination-controls>
+                                                </div>
+                                            </div>
+                                            <ng-container *ngIf="listaModeloPromedio.length === 0">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p>No hay datos disponibles</p>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </section>
+                                </mat-tab>
+                            </mat-tab-group>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-form-modelo-promedio [modeloPromedioEditar]="modeloPromedioSeleccionado" 
+    [periodoSeleccionado]="periodoSeleccionado"
+    [listaModeloPromedioChild]="listaModeloPromedio"
+    (listaModeloPromedio)="listaModeloPromedioActualizada($event)"  
+    (close)="closeDetail($event)" *ngIf="showDetail">
+</app-form-modelo-promedio>
+
+<ng-template #modal_confirm_delete let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Confirmar borrado.'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'¿Quieres borrar el registro?'}}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('yes')">{{'Si'}}</button>
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('no')">{{'No'}}</button>
+    </div>
+</ng-template>
+
+<ng-template #modal_success let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Exito'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'El registro ha sido borrada con éxito'}}
+    </div>
+</ng-template>
+
+<ng-template #modal_error let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{'Error'}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="modal.close()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{'Ha habido un problema al borrar el registro'}}
+    </div>
+</ng-template>
